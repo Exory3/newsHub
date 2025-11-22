@@ -1,0 +1,25 @@
+###create news
+POST http://localhost:3000/news
+Content-Type: application/json
+
+{
+    "title": "sample",
+    "article": "Wed, 21 Oct 2015 18:27:50 GMT",
+    "tag": "Gwent"
+}
+
+### Delete news
+DELETE http://localhost:3000/news/4
+Content-Type: application/json
+
+{}
+### Get all news
+GET http://localhost:3000/news
+
+###Subscribe
+POST http://localhost:3000/subscribe 
+Content-Type: application/json
+
+{
+    "email":"qwee@qwe.com"
+}
