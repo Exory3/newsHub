@@ -4,7 +4,7 @@ import * as z from 'zod'
 const newsSchema = z.object({
   title: z.string().trim().min(5),
   article: z.string().trim().min(10),
-  tag: z.string() || null,
+  tags: z.array(z.string())
 })
 
 const getNewsById = (id) =>
@@ -22,17 +22,17 @@ export default function newsRoutes(app) {
       .prepare(
         `SELECT *
      FROM news
-     WHERE (? IS NULL OR tag = ?)
+     WHERE (? IS NULL OR tags LIKE '%' || ? || '%')
      ORDER BY id DESC
      LIMIT ? OFFSET ?`
       )
-      .all(tag, tag, limit, offset)
+      .all(tag, tag, limit, offset).map(row=>({...row, tags:JSON.parse(row.tags)}))
 
     const total = db
       .prepare(
         `SELECT COUNT(*) AS count
      FROM news
-     WHERE (? IS NULL OR tag = ?)`
+     WHERE (? IS NULL OR tags LIKE '%' || ? || '%')`
       )
       .get(tag, tag).count
 
@@ -61,38 +61,46 @@ export default function newsRoutes(app) {
         .status(404)
         .send({error: {message: 'Article not found', code: 'NOT_FOUND'}})
     }
-    return reply.status(200).send({data: article})
+    return reply.status(200).send({data:{...article, tags} })
   })
   app.post('/news', (request, reply) => {
-    const {title, article, tag} = request.body
+    const {title, article, tags} = request.body
+
+    const tagsJson = JSON.stringify(tags)
     const createdAt = Date.now()
 
     try {
-      newsSchema.parse({title, article, tag})
+      newsSchema.parse({title, article, tags})
 
       const insert = db.prepare(`
-        INSERT INTO news(title,article,createdAt,tag)
+        INSERT INTO news(title,tags,article,createdAt)
         VALUES(?, ?, ?, ?)
       `)
 
-      const result = insert.run(title, article, createdAt, tag)
+      const result = insert.run(title,tagsJson, article,  createdAt )
       reply
         .code(201)
         .header('Location', `/news/${result.lastInsertRowid}`)
         .send({
-          data: {id: result.lastInsertRowid, title, article, createdAt, tag},
+          data: {id: result.lastInsertRowid, title, article, createdAt, tags},
         })
     } catch (err) {
       if (err instanceof z.ZodError) {
         reply.code(400).send({
           error: {message: 'Validation failed', code: 'VALIDATION_ERROR'},
         })
-      }
+        
+      }else {
+      console.error(err); // log for debugging
+      reply.code(500).send({
+        error: { message: "Server error", code: "SERVER_ERROR" },
+      });
+    }
     }
   })
 
   app.patch('/news/:id', (request, reply) => {
-    const {title, article, tag} = request.body
+    const {title, article, tags} = request.body
     const {id} = request.params
 
     try {
@@ -102,20 +110,24 @@ export default function newsRoutes(app) {
           error: {message: 'News article not found', code: 'NOT_FOUND'},
         })
       }
-      const update = db.prepare(`
-      UPDATE news 
-      SET title = ?, article = ?
-      WHERE id = ?
-      `)
+    
 
       const updateData = {
         title: title ?? existing.title,
         article: article ?? existing.article,
+        tags:tags?? existing.tags
       }
       const updateSchema = newsSchema.partial()
       updateSchema.parse(updateData)
 
-      update.run(title ?? existing.title, article ?? existing.article, id)
+      const update = db.prepare(`
+        UPDATE news 
+        SET title = ?, article = ?, tags = ?
+        WHERE id = ?
+      `)
+
+      update.run(updateData.title, updateData.article, JSON.stringify(updateData.tags), id)
+
       const data = getNewsById(id)
       reply.code(200).send({data})
     } catch (err) {
@@ -124,6 +136,7 @@ export default function newsRoutes(app) {
           error: {message: 'Validation failed', code: 'VALIDATION_ERROR'},
         })
       }
+      throw err
     }
   })
   app.patch('/news/:id/view', (request, reply) => {
@@ -146,4 +159,5 @@ export default function newsRoutes(app) {
       .code(200)
       .send({data: article, message: 'Article successfully deleted'})
   })
+  
 }

@@ -6,15 +6,17 @@ import tagsRoutes from './routes/tags.js'
 import subscribe from "./routes/subscribe.js"
 
 const app = Fastify()
-await app.register(cors,{
-  origin:true
-})
+await app.register(cors, {
+  origin: "*",
+  methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type"],
+});
 app.register(newsRoutes)
 app.register(tagsRoutes)
 app.register(subscribe)
 
 const port = Number(process.env.PORT) || 3000
-app.listen({port}, (err, address) => {
+app.listen({port, host: "0.0.0.0"}, (err, address) => {
   if (err) throw err
   console.log(`Server listening at ${address}`)
 })

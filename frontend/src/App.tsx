@@ -2,8 +2,8 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import Home from "./Pages/HomePage";
 import Layout from "./Layout/Layout";
 import ErrorPage from "./Pages/ErrorPage";
-import NewPage from "./Pages/NewPage";
-import { newLoader } from "./Pages/newPageLoader";
+import RecentPage from "./Pages/RecentPage";
+import { newLoader } from "./Pages/RecentPageLoader";
 
 function App() {
   const router = createBrowserRouter([
@@ -16,7 +16,7 @@ function App() {
           index: true,
           element: <Home />,
         },
-        { path: "new", element: <NewPage />, loader: newLoader },
+        { path: "new", element: <RecentPage />, loader: newLoader },
       ],
     },
   ]);

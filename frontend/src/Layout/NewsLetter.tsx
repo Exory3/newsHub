@@ -19,16 +19,18 @@ function NewsLetter() {
     if (res.ok) {
       setStatus("success");
       setEmail("");
-      setTimeout(() => setStatus("idle"), 2000);
+      console.log("hel");
     } else {
       setStatus("error");
       const data: { message?: string } = await res.json();
       const error = data.message ?? "Something went wrong";
       setError(error);
+      console.log("xd");
     }
+    setTimeout(() => setStatus("idle"), 2000);
   };
   return (
-    <div>
+    <div className="relative">
       <form className={NLForm()} onSubmit={handleSubmit}>
         <input
           className={NLInput()}
@@ -38,17 +40,19 @@ function NewsLetter() {
           onChange={(e) => setEmail(e.target.value)}
         />
         <button
-          className="mx-2 flex-none"
+          className="mx-2 flex-none cursor-pointer"
           type="submit"
           disabled={status === "loading"}
         >
           subscribe
         </button>
       </form>
-      {status === "success" && (
-        <p className={NLInfo()}>email successfully registered</p>
-      )}
-      {status === "error" && <p className={NLError()}>{error}</p>}
+      <div className="fixed">
+        {status === "success" && (
+          <p className={NLInfo()}>email successfully registered</p>
+        )}
+        {status === "error" && <p className={NLError()}>{error}</p>}
+      </div>
     </div>
   );
 }

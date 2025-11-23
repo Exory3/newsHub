@@ -6,7 +6,7 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS news (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
-    tag TEXT, 
+    tags TEXT NOT NULL, 
     views INTEGER NOT NULL DEFAULT 0,
     article TEXT NOT NULL,
     createdAt INTEGER NOT NULL
