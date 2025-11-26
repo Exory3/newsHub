@@ -1,13 +1,13 @@
 import { useLoaderData } from "react-router";
-import type { newLoader } from "./RecentPageLoader";
+import type { newsLoader } from "./NewsPageLoader";
 import ArticlePreview from "../Components/ArticlePreview";
 
-function RecentPage() {
-  const { data } = useLoaderData<typeof newLoader>();
+function NewsPage() {
+  const { data } = useLoaderData<typeof newsLoader>();
   const { items } = data;
 
   return (
-    <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <section className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
       {items.map((item) => (
         <ArticlePreview key={item.id} {...item} />
       ))}
@@ -15,4 +15,4 @@ function RecentPage() {
   );
 }
 
-export default RecentPage;
+export default NewsPage;

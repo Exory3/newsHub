@@ -1,9 +1,12 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
-import Home from "./Pages/HomePage";
+import Home from "./Components/Sidebar";
 import Layout from "./Layout/Layout";
 import ErrorPage from "./Pages/ErrorPage";
-import RecentPage from "./Pages/RecentPage";
-import { newLoader } from "./Pages/RecentPageLoader";
+import NewsPage from "./Pages/NewsPage";
+import { newsLoader } from "./Pages/NewsPageLoader";
+import NewArticlePage from "./Pages/NewArticlePage";
+import ArticlePage from "./Pages/ArticlePage";
+// import { homePageLoader } from "./Pages/HomePageLoader";
 
 function App() {
   const router = createBrowserRouter([
@@ -12,11 +15,10 @@ function App() {
       element: <Layout />,
       errorElement: <ErrorPage />,
       children: [
-        {
-          index: true,
-          element: <Home />,
-        },
-        { path: "new", element: <RecentPage />, loader: newLoader },
+        { index: true, element: <Home /> },
+        { path: "news", element: <NewsPage />, loader: newsLoader },
+        { path: "news/:id", element: <ArticlePage /> },
+        { path: "add", element: <NewArticlePage /> },
       ],
     },
   ]);

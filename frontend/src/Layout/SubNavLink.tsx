@@ -1,12 +1,12 @@
 import { Link } from "react-router";
-import { subNavItem } from "./nav.styles";
+import { subNavItem } from "./layout.styles";
 
 interface Props {
   to: string;
   children: React.ReactNode;
 }
 
-function SabNavLink({ to, children }: Props) {
+function SubNavLink({ to, children }: Props) {
   return (
     <Link className={subNavItem()} to={to}>
       {children}
@@ -14,4 +14,4 @@ function SabNavLink({ to, children }: Props) {
   );
 }
 
-export default SabNavLink;
+export default SubNavLink;

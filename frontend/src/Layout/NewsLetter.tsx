@@ -2,7 +2,9 @@ import { useState, type FormEvent } from "react";
 import { NLError, NLForm, NLInfo, NLInput } from "./layout.styles";
 
 function NewsLetter() {
-  const [status, setStatus] = useState("idle");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -19,13 +21,11 @@ function NewsLetter() {
     if (res.ok) {
       setStatus("success");
       setEmail("");
-      console.log("hel");
     } else {
       setStatus("error");
       const data: { message?: string } = await res.json();
       const error = data.message ?? "Something went wrong";
       setError(error);
-      console.log("xd");
     }
     setTimeout(() => setStatus("idle"), 2000);
   };
@@ -44,7 +44,7 @@ function NewsLetter() {
           type="submit"
           disabled={status === "loading"}
         >
-          subscribe
+          {status === "loading" ? "Submitting.." : "Subscribe"}
         </button>
       </form>
       <div className="fixed">

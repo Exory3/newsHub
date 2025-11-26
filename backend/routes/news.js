@@ -4,7 +4,7 @@ import * as z from 'zod'
 const newsSchema = z.object({
   title: z.string().trim().min(5),
   article: z.string().trim().min(10),
-  tags: z.array(z.string())
+  tags: z.array(z.string()),
 })
 
 const getNewsById = (id) =>
@@ -26,7 +26,8 @@ export default function newsRoutes(app) {
      ORDER BY id DESC
      LIMIT ? OFFSET ?`
       )
-      .all(tag, tag, limit, offset).map(row=>({...row, tags:JSON.parse(row.tags)}))
+      .all(tag, tag, limit, offset)
+      .map((row) => ({...row, tags: JSON.parse(row.tags)}))
 
     const total = db
       .prepare(
@@ -61,10 +62,10 @@ export default function newsRoutes(app) {
         .status(404)
         .send({error: {message: 'Article not found', code: 'NOT_FOUND'}})
     }
-    return reply.status(200).send({data:{...article, tags} })
+    return reply.status(200).send({data: {...article, tags}})
   })
   app.post('/news', (request, reply) => {
-    const {title, article, tags} = request.body
+    const {title, article, image, tags} = request.body
 
     const tagsJson = JSON.stringify(tags)
     const createdAt = Date.now()
@@ -73,11 +74,11 @@ export default function newsRoutes(app) {
       newsSchema.parse({title, article, tags})
 
       const insert = db.prepare(`
-        INSERT INTO news(title,tags,article,createdAt)
-        VALUES(?, ?, ?, ?)
+        INSERT INTO news(title,tags,article,createdAt,image)
+        VALUES(?, ?, ?, ?, ?)
       `)
 
-      const result = insert.run(title,tagsJson, article,  createdAt )
+      const result = insert.run(title, tagsJson, article, createdAt, image)
       reply
         .code(201)
         .header('Location', `/news/${result.lastInsertRowid}`)
@@ -89,13 +90,12 @@ export default function newsRoutes(app) {
         reply.code(400).send({
           error: {message: 'Validation failed', code: 'VALIDATION_ERROR'},
         })
-        
-      }else {
-      console.error(err); // log for debugging
-      reply.code(500).send({
-        error: { message: "Server error", code: "SERVER_ERROR" },
-      });
-    }
+      } else {
+        console.error(err) // log for debugging
+        reply.code(500).send({
+          error: {message: 'Server error', code: 'SERVER_ERROR'},
+        })
+      }
     }
   })
 
@@ -110,12 +110,11 @@ export default function newsRoutes(app) {
           error: {message: 'News article not found', code: 'NOT_FOUND'},
         })
       }
-    
 
       const updateData = {
         title: title ?? existing.title,
         article: article ?? existing.article,
-        tags:tags?? existing.tags
+        tags: tags ?? existing.tags,
       }
       const updateSchema = newsSchema.partial()
       updateSchema.parse(updateData)
@@ -126,7 +125,12 @@ export default function newsRoutes(app) {
         WHERE id = ?
       `)
 
-      update.run(updateData.title, updateData.article, JSON.stringify(updateData.tags), id)
+      update.run(
+        updateData.title,
+        updateData.article,
+        JSON.stringify(updateData.tags),
+        id
+      )
 
       const data = getNewsById(id)
       reply.code(200).send({data})
@@ -159,5 +163,4 @@ export default function newsRoutes(app) {
       .code(200)
       .send({data: article, message: 'Article successfully deleted'})
   })
-  
 }

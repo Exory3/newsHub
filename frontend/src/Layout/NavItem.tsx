@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { navItem, subNavMenu } from "./nav.styles";
 import { useLocation } from "react-router";
+import { navItem, subNavMenu } from "./layout.styles";
 
 interface Props {
   label: string;

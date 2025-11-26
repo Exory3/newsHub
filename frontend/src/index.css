@@ -12,3 +12,7 @@
   -moz-osx-font-smoothing: grayscale;
   color: white;
 }
+html,
+body {
+  height: 100%;
+}

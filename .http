@@ -18,7 +18,7 @@ Content-Type: application/json
 
 {}
 ### Get all news
-GET http://localhost:3000/news
+GET http://localhost:3000/news?tag=dd
 
 ###Subscribe
 POST http://localhost:3000/subscribe 
@@ -27,3 +27,6 @@ Content-Type: application/json
 {
     "email":"qweee@qwe.com"
 }
+
+### GET ALL TAGS
+GET http://localhost:3000/tags

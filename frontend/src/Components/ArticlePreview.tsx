@@ -1,22 +1,35 @@
-import { Link } from "react-router";
-import type { LoaderResponse } from "../Pages/RecentPageLoader";
+import { Link, useNavigate } from "react-router";
+import type { ArticleDetails } from "../Pages/NewsPageLoader";
 import Tag from "./UI/Tag";
+import {
+  articleHeader,
+  articleStyle,
+  articleSubHeader,
+  articleTags,
+  articleViews,
+} from "./ArticlePreview.styles";
 
-type Props = LoaderResponse;
-function ArticlePreview({ title, article, views, tags }: Props) {
-  console.log(tags);
+type Props = ArticleDetails;
+function ArticlePreview(props: Props) {
+  const navigate = useNavigate();
+  const { title, article, views, tags, id, image } = props;
+  console.log(image);
   return (
-    <article className="cursor-pointer gap-2 rounded-lg bg-slate-800 p-4 text-white shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl">
-      <h1 className="line-clamp-2 text-3xl font-bold capitalize">{title}</h1>
-      <div className="mb-1 flex items-start justify-between">
-        <div className="flex flex-wrap gap-2">
+    <article
+      tabIndex={0}
+      className={articleStyle()}
+      onClick={() => navigate(`/news/${id}`, { state: props })}
+    >
+      <h1 className={articleHeader()}>{title}</h1>
+      <div className={articleSubHeader()}>
+        <div className={articleTags()}>
           {tags.map((tag) => (
             <Tag key={tag}>
               <Link to={`/news?tag=${tag}`}>{tag}</Link>
             </Tag>
           ))}
         </div>
-        <span className="text-sm opacity-60">👁{views}</span>
+        <span className={articleViews()}>👁{views}</span>
       </div>
       <p className="line-clamp-3">{article}</p>
     </article>
