@@ -8,18 +8,21 @@ import {
   articleTags,
   articleViews,
 } from "./ArticlePreview.styles";
+import { BASEURL } from "../utils/constants";
 
 type Props = ArticleDetails;
 function ArticlePreview(props: Props) {
   const navigate = useNavigate();
   const { title, article, views, tags, id, image } = props;
   console.log(image);
+
+  const handleNavigate = () => {
+    fetch(BASEURL + `/news/${id}/view`, { method: "PATCH" });
+    navigate(`/news/${id}`, { state: props });
+  };
+
   return (
-    <article
-      tabIndex={0}
-      className={articleStyle()}
-      onClick={() => navigate(`/news/${id}`, { state: props })}
-    >
+    <article tabIndex={0} className={articleStyle()} onClick={handleNavigate}>
       <h1 className={articleHeader()}>{title}</h1>
       <div className={articleSubHeader()}>
         <div className={articleTags()}>

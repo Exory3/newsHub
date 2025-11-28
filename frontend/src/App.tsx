@@ -6,6 +6,7 @@ import NewsPage from "./Pages/NewsPage";
 import { newsLoader } from "./Pages/NewsPageLoader";
 import NewArticlePage from "./Pages/NewArticlePage";
 import ArticlePage from "./Pages/ArticlePage";
+import EditArticlePage from "./Pages/EditArticlePage";
 // import { homePageLoader } from "./Pages/HomePageLoader";
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         { index: true, element: <Home /> },
         { path: "news", element: <NewsPage />, loader: newsLoader },
         { path: "news/:id", element: <ArticlePage /> },
+        { path: "news/:id/edit", element: <EditArticlePage /> },
         { path: "add", element: <NewArticlePage /> },
       ],
     },

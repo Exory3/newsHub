@@ -100,7 +100,7 @@ export default function newsRoutes(app) {
   })
 
   app.patch('/news/:id', (request, reply) => {
-    const {title, article, tags} = request.body
+    const {title, article, tags, image} = request.body
     const {id} = request.params
 
     try {
@@ -115,13 +115,14 @@ export default function newsRoutes(app) {
         title: title ?? existing.title,
         article: article ?? existing.article,
         tags: tags ?? existing.tags,
+        image: image ?? existing.image,
       }
       const updateSchema = newsSchema.partial()
       updateSchema.parse(updateData)
 
       const update = db.prepare(`
         UPDATE news 
-        SET title = ?, article = ?, tags = ?
+        SET title = ?, article = ?, tags = ?, image = ?
         WHERE id = ?
       `)
 
@@ -129,6 +130,7 @@ export default function newsRoutes(app) {
         updateData.title,
         updateData.article,
         JSON.stringify(updateData.tags),
+        updateData.image,
         id
       )
 
