@@ -10,7 +10,7 @@ interface Props {
 function NavItem({ label, children, activeLinks }: Props) {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const firstSegment = "/" + location.pathname.split("/")[1];
+  const firstSegment = location.pathname.split("/")[1];
   const isActive = activeLinks.includes(firstSegment);
   const isMobile = window.innerWidth < 768;
 

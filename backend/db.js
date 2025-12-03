@@ -10,6 +10,7 @@ db.exec(`
     image TEXT NOT NULL DEFAULT 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/800px-Flag_of_Europe.svg.png?20081021155534',
     views INTEGER NOT NULL DEFAULT 0,
     article TEXT NOT NULL,
+    author TEXT NOT NULL,
     createdAt INTEGER NOT NULL
   );
 `)
@@ -19,6 +20,14 @@ db.exec(`
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   email TEXT UNIQUE NOT NULL,
   createdAt INTEGER NOT NULL
+   )`)
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  role TEXT DEFAULT 'user'
    )`)
 
 export default db

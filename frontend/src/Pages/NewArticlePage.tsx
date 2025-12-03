@@ -1,4 +1,5 @@
-import ArticleForm, { type Form } from "../Components/ArticleForm/ArticleForm";
+import ArticleForm from "../Components/ArticleForm/ArticleForm";
+import type { Form } from "../Components/ArticleForm/types";
 import { BASEURL, defaultImageUrl } from "../utils/constants";
 
 function NewArticlePage() {
@@ -8,6 +9,7 @@ function NewArticlePage() {
       headers: {
         "content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({
         ...form,
         image: form.image.trim() ? form.image : defaultImageUrl,

@@ -19,8 +19,11 @@ export const newsLoader = async ({
   const url = new URL(request.url);
   const tag = url.searchParams.get("tag");
   const page = url.searchParams.get("page") ?? "1";
+  const filter = url.searchParams.get("filter") ?? "";
 
-  const res = await fetch(`${BASEURL}/news?tag=${tag ?? ""}&page=${page}`);
+  const res = await fetch(
+    `${BASEURL}/news?tag=${tag ?? ""}&filter=${filter}&page=${page}`,
+  );
   if (!res.ok) {
     throw new Error("Failed to fetch page");
   }

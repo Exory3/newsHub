@@ -6,7 +6,10 @@ export const layoutConatiner = tv({
 });
 
 export const main = tv({
-  base: "flex-1 flex flex-col items-start p-8 w-8/10  mx-auto",
+  base: "flex-1 flex flex-col items-start p-8 ",
+});
+export const body = tv({
+  base: "grid grid-cols-[200px_minmax(900px,1fr)] items-start",
 });
 
 //header
@@ -38,7 +41,7 @@ export const NLError = tv({
 //Nav
 
 export const navContainer = tv({
-  base: "flex flex-1 justify-center gap-12 px-10",
+  base: "flex flex-1 justify-center gap-12 px-10 items-center",
 });
 //SabNavItem
 export const subNavItem = tv({

@@ -1,7 +1,7 @@
 import { tv } from "tailwind-variants/lite";
 
 export const sidebar = tv({
-  base: "max-w-40 rounded-xl bg-slate-800 p-4 shadow-lg ",
+  base: "max-w-40 rounded-xl bg-slate-800 p-4 m-8 shadow-lg ",
 });
 
 export const sidebarHeader = tv({

@@ -1,10 +1,12 @@
 import db from '../db.js'
 import * as z from 'zod'
+import {adminGuard} from '../middleware/adminGuard.js'
 
 const newsSchema = z.object({
   title: z.string().trim().min(5),
   article: z.string().trim().min(10),
   tags: z.array(z.string()),
+  author: z.string(),
 })
 
 const getNewsById = (id) =>
@@ -14,29 +16,63 @@ export default function newsRoutes(app) {
   app.get('/news', (request, reply) => {
     const page = Number(request.query.page ?? 1)
     const limit = Number(request.query.limit ?? 10)
+    const filter = request.query.filter ?? 'default'
     const tag = request.query.tag?.trim() || null
-
     const offset = (page - 1) * limit
+    const author = request.query.author ?? null
 
+    const now = Date.now()
+    const threeDaysAgo = now - 3 * 24 * 60 * 60 * 1000 // 3 days in ms
+    const todayStart = new Date()
+    todayStart.setHours(0, 0, 0, 0)
+    const tomorrowStart = todayStart.getTime() + 24 * 60 * 60 * 1000
+
+    // --- Build WHERE dynamically ---
+    let where = '1 = 1'
+    const params = []
+
+    // Popular filter
+    if (filter === 'popular') {
+      where += ' AND createdAt >= ?'
+      params.push(threeDaysAgo)
+    }
+
+    // Recent filter (today only)
+    if (filter === 'recent') {
+      where += ' AND createdAt >= ? AND createdAt < ?'
+      params.push(todayStart.getTime(), tomorrowStart)
+    }
+    if (tag) {
+      where += " AND tags LIKE '%' || ? || '%'"
+      params.push(tag)
+    }
+
+    if (author) {
+      where += ` AND author = ?`
+      params.push(author)
+    }
+    // --- Fetch items ---
     const items = db
       .prepare(
         `SELECT *
      FROM news
-     WHERE (? IS NULL OR tags LIKE '%' || ? || '%')
-     ORDER BY id DESC
+     WHERE ${where}
+     ORDER BY ${filter === 'popular' ? 'views DESC' : 'id DESC'}
      LIMIT ? OFFSET ?`
       )
-      .all(tag, tag, limit, offset)
-      .map((row) => ({...row, tags: JSON.parse(row.tags)}))
+      .all(...params, limit, offset)
+      .map((r) => ({...r, tags: JSON.parse(r.tags)}))
 
+    // --- Count total ---
     const total = db
       .prepare(
         `SELECT COUNT(*) AS count
      FROM news
-     WHERE (? IS NULL OR tags LIKE '%' || ? || '%')`
+     WHERE ${where}`
       )
-      .get(tag, tag).count
+      .get(...params).count
 
+    // Tag-specific 404
     if (tag && total === 0) {
       return reply.status(404).send({
         error: {message: 'No articles found for your tag', code: 'NOT_FOUND'},
@@ -50,9 +86,11 @@ export default function newsRoutes(app) {
         total,
         pages: Math.ceil(total / limit),
         items,
+        author,
       },
     }
   })
+
   app.get('/news/:id', (request, reply) => {
     const {id} = request.params
     const article = getNewsById(id)
@@ -64,26 +102,40 @@ export default function newsRoutes(app) {
     }
     return reply.status(200).send({data: {...article, tags}})
   })
+
   app.post('/news', (request, reply) => {
-    const {title, article, image, tags} = request.body
+    const {title, article, image, tags, author} = request.body
 
     const tagsJson = JSON.stringify(tags)
     const createdAt = Date.now()
 
     try {
-      newsSchema.parse({title, article, tags})
+      newsSchema.parse({title, article, tags, author})
 
       const insert = db.prepare(`
-        INSERT INTO news(title,tags,article,createdAt,image)
-        VALUES(?, ?, ?, ?, ?)
+        INSERT INTO news(title,tags,article,createdAt,image, author)
+        VALUES(?, ?, ?, ?, ?,?)
       `)
 
-      const result = insert.run(title, tagsJson, article, createdAt, image)
+      const result = insert.run(
+        title,
+        tagsJson,
+        article,
+        createdAt,
+        image,
+        author
+      )
       reply
         .code(201)
         .header('Location', `/news/${result.lastInsertRowid}`)
         .send({
-          data: {id: result.lastInsertRowid, title, article, createdAt, tags},
+          data: {
+            id: result.lastInsertRowid,
+            title,
+            article,
+            createdAt,
+            tags,
+          },
         })
     } catch (err) {
       if (err instanceof z.ZodError) {
@@ -145,11 +197,13 @@ export default function newsRoutes(app) {
       throw err
     }
   })
+
   app.patch('/news/:id/view', (request, reply) => {
     const {id} = request.params
     db.prepare('UPDATE news SET views = views +1 WHERE ID = ?').run(id)
     return reply.status(204).send()
   })
+
   app.delete('/news/:id', (request, reply) => {
     const {id} = request.params
 

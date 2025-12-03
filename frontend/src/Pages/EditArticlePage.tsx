@@ -1,7 +1,8 @@
 import { useLocation, useNavigate, useParams } from "react-router";
-import ArticleForm, { type Form } from "../Components/ArticleForm/ArticleForm";
+import ArticleForm from "../Components/ArticleForm/ArticleForm";
 import { BASEURL, defaultImageUrl } from "../utils/constants";
 import type { ArticleDetails } from "./NewsPageLoader";
+import type { Form } from "../Components/ArticleForm/types";
 
 function EditArticlePage() {
   const { id } = useParams();

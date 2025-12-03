@@ -5,11 +5,11 @@ export const formStyle = tv({
 });
 
 export const formGrid = tv({
-  base: "grid  gap-4 md:grid-cols-2 mb-4 ",
+  base: "grid  gap-1 md:grid-cols-2  ",
 });
 
 export const formGridItem = tv({
-  base: "flex gap-2 items-center ",
+  base: "flex  flex-col ",
 });
 export const formInput = tv({
   base: `

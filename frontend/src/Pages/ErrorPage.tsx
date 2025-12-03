@@ -18,7 +18,7 @@ function ErrorPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigate("..", { replace: true });
-    }, 1000);
+    }, 2000);
     return () => clearTimeout(timer);
   }, [navigate]);
   return (

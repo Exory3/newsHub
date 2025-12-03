@@ -1,11 +1,13 @@
 import type { ArticleDetails } from "../Pages/NewsPageLoader";
+import formatDate from "../utils/formetters";
 
-function Article({ image, title, article }: ArticleDetails) {
-  console.log(image);
+function Article({ image, title, article, createdAt }: ArticleDetails) {
+  const formatedDate = formatDate(createdAt);
   return (
     <article className="flex flex-col gap-4 bg-amber-100 p-4 text-zinc-900 md:flex-row">
       <div className="flex-1">
         <h2 className="text-3xl wrap-break-word">{title}</h2>
+        <span className="text-xs">{formatedDate}</span>
         <p className="whitespace-pre-wrap">{article}</p>
       </div>
 

@@ -1,5 +1,5 @@
 import { formGrid, textAreaContainer } from "./ArticleForm.styles";
-import FormInput from "./FormInput";
+import FormInput from "../UI/FormInput";
 import type { Form } from "./types";
 interface Props {
   form: Form;
@@ -7,7 +7,7 @@ interface Props {
 }
 function InputFields({ form, updateField }: Props) {
   return (
-    <div>
+    <div className="space-y-4">
       <div className={formGrid()}>
         <FormInput
           label="Title"
@@ -23,7 +23,7 @@ function InputFields({ form, updateField }: Props) {
           id="tags"
           type="text"
           value={form.tags.join(", ")}
-          placeholder="Please, select few, separted by coma"
+          placeholder="Please, select few, separated by comma"
           onChange={(e) =>
             updateField(
               "tags",
@@ -41,16 +41,19 @@ function InputFields({ form, updateField }: Props) {
           updateField("image", e.target.value);
         }}
       />
-      <FormInput
-        wrapperClassName={textAreaContainer()}
-        label="Article"
-        id="article"
-        as="textarea"
-        value={form.article}
-        onChange={(e) => {
-          updateField("article", e.target.value);
-        }}
-      />
+      <div className={textAreaContainer()}>
+        <FormInput
+          wrapperClassName={textAreaContainer()}
+          label="Article"
+          id="article"
+          as="textarea"
+          value={form.article}
+          rows={10}
+          onChange={(e) => {
+            updateField("article", e.target.value);
+          }}
+        />
+      </div>
     </div>
   );
 }

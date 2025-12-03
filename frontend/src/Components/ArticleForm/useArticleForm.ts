@@ -1,6 +1,8 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type { Form, Status } from "./types";
 import { isError } from "../../utils/typeCheck";
+import useAuth from "../../store/authContext";
+import { useNavigate } from "react-router";
 
 const saveDraft = (draft: Form) => {
   localStorage.setItem("form", JSON.stringify(draft));
@@ -15,11 +17,20 @@ const initialFormState = {
 
 const useArticleForm = (
   mode: "create" | "edit",
-  onSubmit: (f: Form) => Promise<Response>,
+  onSubmit: (f: Form & { author: string }) => Promise<Response>,
   initialData?: Form,
 ) => {
+  const navigate = useNavigate();
   const [form, setForm] = useState<Form>(initialData ?? initialFormState);
   const [state, setState] = useState<Status>({ status: "idle" });
+  const { auth } = useAuth();
+  let author: string;
+
+  if (auth.status === "guest") {
+    navigate("/");
+  } else {
+    author = auth.user.email.split("@")[0];
+  }
 
   const updateField = <K extends keyof Form>(field: K, value: Form[K]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -49,6 +60,7 @@ const useArticleForm = (
       }
     }
   }, [mode]);
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const errors = [];
@@ -62,7 +74,7 @@ const useArticleForm = (
     setState({ status: "loading" });
 
     try {
-      const res = await onSubmit(form);
+      const res = await onSubmit({ ...form, author });
 
       if (!res.ok) {
         throw new Error("Error sending request to  server");
