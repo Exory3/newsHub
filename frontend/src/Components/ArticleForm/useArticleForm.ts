@@ -11,7 +11,7 @@ const saveDraft = (draft: Form) => {
 const initialFormState = {
   article: "",
   image: "",
-  tags: [""],
+  tags: [],
   title: "",
 };
 

@@ -5,7 +5,7 @@ import InputFields from "./InputFields";
 import { formStyle } from "./ArticleForm.styles";
 
 function ArticleForm({ onSubmit, initialData, mode }: Props) {
-  const { form, handleSubmit, isLoading, state, updateField } = useArticleForm(
+  const { form, isLoading, state, handleSubmit, updateField } = useArticleForm(
     mode,
     onSubmit,
     initialData,

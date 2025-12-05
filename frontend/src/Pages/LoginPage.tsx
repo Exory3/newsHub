@@ -1,19 +1,9 @@
 import { useActionData } from "react-router";
-import LoginForm from "../Components/LoginForm";
-import useAuth from "../store/authContext";
-import type loginAction from "../Components/LoginFormAction";
-import { useEffect } from "react";
+import LoginForm from "../Components/LoginForm/LoginForm";
+import type loginAction from "../Components/LoginForm/LoginFormAction";
 
 function LoginPage() {
-  const { login } = useAuth();
-
   const data = useActionData<typeof loginAction>();
-
-  useEffect(() => {
-    if (data && data?.message === "Success" && data?.data) {
-      login(data.data);
-    }
-  }, [data, login]);
 
   return (
     <>

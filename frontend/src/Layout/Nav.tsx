@@ -14,16 +14,16 @@ function Nav() {
         <SubNavLink to="news?filter=popular">Popular</SubNavLink>
       </NavItem>
 
-      {role === "admin" && (
+      {role && (
         <NavItem label="editing" activeLinks={["create"]}>
           <SubNavLink to="/create">Create</SubNavLink>
         </NavItem>
       )}
       {!role ? (
-        <SubNavLink to="/login">Login</SubNavLink>
+        <SubNavLink to="/auth?mode=login">Login</SubNavLink>
       ) : (
         <Form method="post" action="/logout">
-          <button>Logout</button>
+          <button className="cursor-pointer">Logout</button>
         </Form>
       )}
     </nav>

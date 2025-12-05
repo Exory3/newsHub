@@ -92,7 +92,11 @@ export default function newsRoutes(app) {
   })
 
   app.get('/news/:id', (request, reply) => {
-    const {id} = request.params
+    const id = Number(request.params.id)
+    if (Number.isNaN(id)) {
+      return reply.code(400).send({error: 'Invalid ID'})
+    }
+
     const article = getNewsById(id)
 
     if (!article) {
@@ -100,7 +104,7 @@ export default function newsRoutes(app) {
         .status(404)
         .send({error: {message: 'Article not found', code: 'NOT_FOUND'}})
     }
-    return reply.status(200).send({data: {...article, tags}})
+    return reply.status(200).send({data: {...article}})
   })
 
   app.post('/news', (request, reply) => {
@@ -205,9 +209,16 @@ export default function newsRoutes(app) {
   })
 
   app.delete('/news/:id', (request, reply) => {
-    const {id} = request.params
+    const id = Number(request.params.id)
+    console.log('PARAMS:', request.params)
+    console.log('ID:', id)
+
+    if (Number.isNaN(id)) {
+      return reply.code(400).send({error: 'Invalid ID'})
+    }
 
     const article = db.prepare('SELECT * FROM news WHERE id = ?').get(id)
+
     if (!article) {
       return reply
         .code(404)
@@ -215,7 +226,8 @@ export default function newsRoutes(app) {
     }
 
     db.prepare('DELETE FROM news WHERE id = ?').run(id)
-    reply
+
+    return reply
       .code(200)
       .send({data: article, message: 'Article successfully deleted'})
   })

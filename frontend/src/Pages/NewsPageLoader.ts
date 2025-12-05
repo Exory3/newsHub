@@ -8,6 +8,7 @@ export interface ArticleDetails {
   title: string;
   views: number;
   image: string;
+  author: string;
 }
 interface loaderData {
   data: { items: ArticleDetails[]; limit: number; page: number; total: number };

@@ -7,7 +7,7 @@ import {
   sidebarHeader,
   sidebarItem,
   sidebarLink,
-} from "../Components/Sidebar.styles";
+} from "./Sidebar.styles";
 
 interface Tags {
   data: {

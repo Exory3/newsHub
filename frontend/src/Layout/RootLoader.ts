@@ -1,7 +1,7 @@
 import type { AuthState } from "../store/authContext";
 import { BASEURL } from "../utils/constants";
 
-const RootLoader = async () => {
+const RootLoader = async (): Promise<{ auth: AuthState }> => {
   try {
     const res = await fetch(BASEURL + "/me", { credentials: "include" });
 
@@ -13,9 +13,8 @@ const RootLoader = async () => {
     if (data.user === null) {
       return { auth: { status: "guest" } };
     }
-    console.log(data);
 
-    return { auth: data };
+    return { auth: { ...data } };
   } catch {
     console.log("error logging in");
     return { auth: { status: "guest" } };

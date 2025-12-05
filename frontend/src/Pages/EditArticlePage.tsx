@@ -1,26 +1,18 @@
 import { useLocation, useNavigate, useParams } from "react-router";
 import ArticleForm from "../Components/ArticleForm/ArticleForm";
-import { BASEURL, defaultImageUrl } from "../utils/constants";
 import type { ArticleDetails } from "./NewsPageLoader";
 import type { Form } from "../Components/ArticleForm/types";
+import { editArticle } from "../utils/api";
 
 function EditArticlePage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const state = useLocation().state as ArticleDetails;
   if (!state) navigate("..", { replace: true });
+  if (!id) throw new Error("");
 
   const handleSubmit = async (form: Form) => {
-    return fetch(BASEURL + `/news/${id}`, {
-      method: "PATCH",
-      headers: {
-        "content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...form,
-        image: form.image.trim() ? form.image : defaultImageUrl,
-      }),
-    });
+    return editArticle(form, id);
   };
 
   return (

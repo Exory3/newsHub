@@ -1,11 +1,8 @@
 import { redirect } from "react-router";
-import { BASEURL } from "../utils/constants";
+import { logout } from "../utils/api";
 
 export default async function logoutAction() {
-  await fetch(`${BASEURL}/logout`, {
-    method: "POST",
-    credentials: "include",
-  });
+  logout();
 
-  return redirect("/login");
+  return redirect("/auth");
 }

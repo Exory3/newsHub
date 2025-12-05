@@ -10,7 +10,7 @@ export type AuthState =
       role: "user" | "admin";
     };
 
-export type Context = { auth: AuthState; login: LoginFn; logout: () => void };
+export type Context = { auth: AuthState };
 
 export const AuthContext = createContext<Context | null>(null);
 
