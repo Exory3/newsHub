@@ -28,6 +28,16 @@ db.exec(`
   email TEXT UNIQUE NOT NULL,
   password TEXT NOT NULL,
   role TEXT DEFAULT 'user'
-   )`)
+)`)
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS comments (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  newsId INTEGER NOT NULL,
+  authorName TEXT NOT NULL,
+  content TEXT NOT NULL,
+  createdAt INTEGER NOT NULL,
+  FOREIGN KEY (newsId) REFERENCES news(id)
+)`)
 
 export default db

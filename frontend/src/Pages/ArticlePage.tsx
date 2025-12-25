@@ -4,6 +4,7 @@ import Article from "../Components/Article";
 import useAuth from "../store/authContext";
 import { useEffect, useState } from "react";
 import { BASEURL } from "../utils/constants";
+import Comments from "../Components/Comments/Comments";
 
 function ArticlePage() {
   const { id } = useParams();
@@ -17,6 +18,7 @@ function ArticlePage() {
 
   useEffect(() => {
     if (article) return;
+
     const loadArticle = async () => {
       const res = await fetch(BASEURL + `/news/${id}`);
       if (!res.ok) throw new Error("Error loading this page");
@@ -26,14 +28,14 @@ function ArticlePage() {
     loadArticle();
   }, [article, id]);
 
-  if (!article) return <div>Loading...</div>;
-
   const handleDelete = () => {
     const confirm = window.confirm(
       "Are you sure you wanna delete this article",
     );
     if (confirm) submit(null, { method: "DELETE" });
   };
+
+  if (!article) return <div>Loading...</div>;
 
   return (
     <div>
@@ -57,6 +59,7 @@ function ArticlePage() {
           </Link>
         )}
       </div>
+      <Comments />
     </div>
   );
 }

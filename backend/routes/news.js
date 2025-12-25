@@ -8,6 +8,10 @@ const newsSchema = z.object({
   tags: z.array(z.string()),
   author: z.string(),
 })
+const commentSchema = z.object({
+  comment: z.string().trim().min(1),
+  author: z.string().min(1),
+})
 
 const getNewsById = (id) =>
   db.prepare('SELECT * FROM news WHERE id = ?').get(id)
@@ -230,5 +234,59 @@ export default function newsRoutes(app) {
     return reply
       .code(200)
       .send({data: article, message: 'Article successfully deleted'})
+  })
+
+  app.get('/news/:id/comments', (request, reply) => {
+    const id = Number(request.params.id)
+    if (Number.isNaN(id)) {
+      return reply.code(400).send({error: 'Invalid ID'})
+    }
+    const items = db
+      .prepare(
+        `
+        SELECT * 
+        FROM comments 
+        WHERE newsId=?
+        ORDER BY createdAt DESC
+      `
+      )
+      .all(id)
+    reply.code(200).send({items})
+  })
+
+  app.post('/news/:id/comments', (request, reply) => {
+    const id = Number(request.params.id)
+    const {comment, author} = request.body
+    try {
+      commentSchema.parse({comment, author})
+      const createdAt = Date.now()
+      const result = db
+        .prepare(
+          `
+      INSERT INTO comments(newsId,authorName,content,createdAt)
+      VALUES(?,?,?,?)
+      `
+        )
+        .run(id, author, comment, createdAt)
+
+      reply.code(201).send({
+        id: result.lastInsertRowid,
+        newsId: id,
+        content: comment,
+        authorName: author,
+        createdAt,
+      })
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        reply.code(400).send({
+          error: {message: 'Invalid data provided', code: 'INVALID_DATA'},
+        })
+      } else {
+        console.error(err) // log for debugging
+        reply.code(500).send({
+          error: {message: 'Server error', code: 'SERVER_ERROR'},
+        })
+      }
+    }
   })
 }

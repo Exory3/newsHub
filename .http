@@ -42,3 +42,17 @@ Content-Type: application/json
   "email": "admin@site.com",
   "password": "admin123"
 }
+
+### create a comment
+POST http://localhost:3000/news/4/comments
+Content-Type: application/json
+
+{
+  "author": "admin",
+  "comment": "nice "
+}
+
+
+### get comment for news
+GET http://localhost:3000/news/4/comments
+
